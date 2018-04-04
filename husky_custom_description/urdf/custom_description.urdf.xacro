@@ -74,6 +74,12 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
         <origin xyz="0 0 0" rpy="0 0 0" />
       </scubyte>
 
+        <!-- Velodyne VLP-16 -->
+        <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
+        <VLP-16 parent="scubyte_link" name="vlp16" topic="/velodyne_points">
+          <origin xyz="0 0 0.1" rpy="0 0 0" />
+        </VLP-16>
+
   <material name="white">
     <color rgba="1 1 1 1"/>
   </material>
