@@ -45,6 +45,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
         </geometry>
       </visual>
     </link>
+
   <joint name="rear_camera_joint" type="fixed">
     <origin xyz="-0.34 0 0" rpy="0 0 0" />
     <parent link="top_plate_link" />
@@ -79,6 +80,32 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
         <VLP-16 parent="scubyte_link" name="vlp16" topic="/velodyne_points">
           <origin xyz="0 0 0.1" rpy="0 0 0" />
         </VLP-16>
+
+  <!-- GPS antenna -->
+  <joint name="top_plate_to_gps_antenna" type="fixed">
+    <parent link="top_plate_link" />
+    <child link="gps_antenna_link" />
+  </joint>
+    <link name="gps_antenna_link">
+      <collision>
+        <origin xyz="0.12 0.14 0" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.05" />
+        </geometry>
+      </collision>
+      <visual>
+        <origin xyz="0.12 0.14 0" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.05" />
+        </geometry>
+        <material name="white"/>
+      </visual>
+      <inertial>
+        <mass value="1e-5" />
+        <origin xyz="0.12 0.14 0" rpy="0 0 0"/>
+        <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+      </inertial>
+    </link>
 
   <material name="white">
     <color rgba="1 1 1 1"/>
