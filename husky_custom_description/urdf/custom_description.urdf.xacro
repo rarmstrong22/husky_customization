@@ -24,7 +24,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCL
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <robot name="husky" xmlns:xacro="http://ros.org/wiki/xacro">
-
   <xacro:arg name="laser_enabled" default="$(optenv HUSKY_LMS1XX_ENABLED false)" />
   <xacro:arg name="ur5_enabled" default="$(optenv HUSKY_UR5_ENABLED false)" />
   <xacro:arg name="kinect_enabled" default="false" />
@@ -32,26 +31,85 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <xacro:include filename="$(find husky_description)/urdf/husky.urdf.xacro" />
   <xacro:husky_robot />
 
-  <!-- Insert customization below, sample provided: -->
-
-  <link name="bowler_link">
-    <visual>
-      <geometry>
-        <mesh filename="package://husky_custom_description/meshes/red_bowler.dae" />
-      </geometry>
-    </visual>
-    <collision>
-      <origin xyz="0 0 0.07" rpy="0 0 0" />
-      <geometry>
-        <box size="0.32 0.25 0.14" rpy="0 0 0"/>
-      </geometry>
-    </collision>
-  </link>
-
-  <joint name="bowler_joint" type="fixed">
+  <!-- drive cameras -->
+  <joint name="front_camera_joint" type="fixed">
+    <origin xyz="0.17 0 0" rpy="0 0 0" />
     <parent link="top_plate_link" />
-    <child link="bowler_link" />
-    <origin xyz="0.1 -0.1 0" rpy="0 0 0.5" />
+    <child link="front_camera" />
   </joint>
+    <link name="front_camera">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 1.5707" />
+        <geometry>
+          <mesh filename="package://husky_custom_description/meshes/p1224e.dae"/>
+        </geometry>
+      </visual>
+    </link>
+
+  <joint name="rear_camera_joint" type="fixed">
+    <origin xyz="-0.34 0 0" rpy="0 0 0" />
+    <parent link="top_plate_link" />
+    <child link="rear_camera" />
+  </joint>
+    <link name="rear_camera">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 4.71" />
+        <geometry>
+          <mesh filename="package://husky_custom_description/meshes/p1224e.dae"/>
+        </geometry>
+      </visual>
+    </link>
+
+  <!-- PTU (bowler) -->
+  <joint name="top_plate_to_ptu_base" type="fixed">
+    <parent link="top_plate_link"/>
+    <child link="ptu_base_link"/>
+    <origin xyz="-0.07 0 0" rpy="0 0 3.14159"/>
+  </joint>
+    <xacro:include filename="$(find mad_bowler_rx_description)/urdf/mad_bowler_rx.urdf.xacro" />
+    <mad_bowler_rx/>
+
+      <!-- Scubyte -->
+      <xacro:include filename="$(find scubyte_description)/urdf/scubyte.urdf.xacro"/>
+      <scubyte name="scubyte" parent="top_plate"> <!-- PTU top_plate, not husky top_plate -->
+        <origin xyz="0 0 0" rpy="0 0 0" />
+      </scubyte>
+
+        <!-- Velodyne VLP-16 -->
+        <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
+        <VLP-16 parent="scubyte_link" name="vlp16" topic="/velodyne_points">
+          <origin xyz="0 0 0.1" rpy="0 0 0" />
+        </VLP-16>
+
+  <!-- GPS antenna -->
+  <joint name="top_plate_to_gps_antenna" type="fixed">
+    <origin xyz="0.12 0.14 0" rpy="0 0 0" />
+    <parent link="top_plate_link" />
+    <child link="gps_antenna_link" />
+  </joint>
+    <link name="gps_antenna_link">
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.05" />
+        </geometry>
+      </collision>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.05" />
+        </geometry>
+        <material name="white"/>
+      </visual>
+      <inertial>
+        <mass value="1e-5" />
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+      </inertial>
+    </link>
+
+  <material name="white">
+    <color rgba="1 1 1 1"/>
+  </material>
 
 </robot>
